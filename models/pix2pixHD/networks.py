@@ -25,9 +25,9 @@ class GlobalGenerator(torch.nn.Module):
         """
         super(GlobalGenerator, self).__init__()
 
-        padding_layer = ...  # some padding
-        norm_layer = ...  # some normalization
-        activation = ...  # some activation function
+        padding_layer = nn.ReflectionPad2d(3)  # some padding
+        norm_layer = nn.BatchNorm2d  # some normalization
+        activation = nn.ReLU(True)  # some activation function
         model_layers = [padding_layer, nn.Conv2d(input_channels, ngf, kernel_size=7), norm_layer(ngf), activation]
 
         # G_F or encoder
