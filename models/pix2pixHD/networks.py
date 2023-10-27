@@ -5,14 +5,14 @@ import numpy as np
 
 class Generator(nn.Module):
     def __init__(self, input_channels, output_channels, ngf, num_down_sampling_global, num_res_blocks_global,
-                 num_local_enhancer_layers, num_res_blocks_local):
+                 num_local_enhancer_layers, num_res_blocks_local, device='cpu'):
         super(Generator, self).__init__()
         self.num_local_enhancer_layers = num_local_enhancer_layers
 
         # global generator
         ngf_global = ngf * (2 ** self.num_local_enhancer_layers)
         model_global = GlobalGenerator(input_channels, output_channels, ngf_global, num_down_sampling_global,
-                                       num_res_blocks_global).model
+                                       num_res_blocks_global).to(device).model
         model_global = [model_global[i] for i in range(len(model_global) - 3)]  # get rid of final convolution layers
         self.model = nn.Sequential(*model_global)
 
@@ -144,7 +144,7 @@ class ResidualBlock(nn.Module):
 
 
 class MultiscaleDiscriminator(nn.Module):
-    def __init__(self, input_channels, ndf, num_layers, num_discriminators):
+    def __init__(self, input_channels, ndf, num_layers, num_discriminators, device='cpi'):
         super(MultiscaleDiscriminator, self).__init__()
         self.num_discriminators = num_discriminators
         self.num_layers = num_layers
@@ -152,7 +152,7 @@ class MultiscaleDiscriminator(nn.Module):
         self.discriminators = nn.ModuleList()
 
         for i in range(num_discriminators):
-            self.discriminators.append(NLayerDiscriminator(input_channels, ndf, num_layers).model)
+            self.discriminators.append(NLayerDiscriminator(input_channels, ndf, num_layers).to(device).model)
         self.downsample = nn.AvgPool2d(3, stride=2, padding=(1, 1), count_include_pad=False)
 
     def forward(self, x):
@@ -204,3 +204,48 @@ class NLayerDiscriminator(nn.Module):
 
     def forward(self, x):
         return self.model(x)
+
+
+class GANLoss(nn.Module):
+    def __init__(self, real_label=1.0, fake_label=0.0):
+        """
+        :param real_label: 1.0 by default, in case of label smoothing you can change this value
+        :param fake_label: 0.0 by default, in case of label smoothing you can change this value
+        """
+        super(GANLoss, self).__init__()
+        self.real_label = real_label
+        self.fake_label = fake_label
+
+        self.real_label_var = None
+        self.fake_label_var = None
+
+        self.loss = nn.BCELoss()
+
+    def get_target_tensor(self, x, is_real):
+        if is_real:
+            create_label = ((self.real_label_var is None) or
+                            (self.real_label_var.numel() != x.numel()))
+            if create_label:
+                real_tensor = torch.Tensor(x.size()).fill_(self.real_label)
+                self.real_label_var = torch.autograd.Variable(real_tensor, requires_grad=False)
+            target_tensor = self.real_label_var
+        else:
+            create_label = ((self.fake_label_var is None) or
+                            (self.fake_label_var.numel() != x.numel()))
+            if create_label:
+                fake_tensor = torch.Tensor(x.size()).fill_(self.fake_label)
+                self.fake_label_var = torch.autograd.Variable(fake_tensor, requires_grad=False)
+            target_tensor = self.fake_label_var
+        return target_tensor
+
+    def __call__(self, x, target_is_real):
+        if isinstance(x[0], list):
+            loss = 0
+            for input_i in x:
+                pred = input_i[-1]
+                target_tensor = self.get_target_tensor(pred, target_is_real)
+                loss += self.loss(pred, target_tensor)
+            return loss
+        else:
+            target_tensor = self.get_target_tensor(x[-1], target_is_real)
+            return self.loss(x[-1], target_tensor)
