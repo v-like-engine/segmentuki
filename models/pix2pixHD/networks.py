@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import numpy as np
 
 
 class Generator(nn.Module):
@@ -140,3 +141,66 @@ class ResidualBlock(nn.Module):
 
     def forward(self, x):
         return self.model(x) + x
+
+
+class MultiscaleDiscriminator(nn.Module):
+    def __init__(self, input_channels, ndf, num_layers, num_discriminators):
+        super(MultiscaleDiscriminator, self).__init__()
+        self.num_discriminators = num_discriminators
+        self.num_layers = num_layers
+
+        self.discriminators = nn.ModuleList()
+
+        for i in range(num_discriminators):
+            self.discriminators.append(NLayerDiscriminator(input_channels, ndf, num_layers).model)
+        self.downsample = nn.AvgPool2d(3, stride=2, padding=(1, 1), count_include_pad=False)
+
+    def forward(self, x):
+        result = []
+
+        x_downsampled = x
+
+        for i in range(self.num_discriminators):
+            result.append(self.discriminators[i](x_downsampled))
+            if i != self.num_discriminators - 1:
+                x_downsampled = self.downsample(x)
+        return result
+
+
+class NLayerDiscriminator(nn.Module):
+    def __init__(self, input_channels, ndf=64, num_layers=3):
+        super(NLayerDiscriminator, self).__init__()
+        self.num_layers = num_layers
+
+        kw = 4
+        padw = int(np.ceil((kw - 1.0) / 2))
+        sequence = [[nn.Conv2d(input_channels, ndf, kernel_size=kw, stride=2, padding=padw), nn.LeakyReLU(0.2, True)]]
+
+        nf = ndf
+        for n in range(1, num_layers):
+            nf_prev = nf
+            nf = min(nf * 2, 512)
+            sequence += [[
+                nn.Conv2d(nf_prev, nf, kernel_size=kw, stride=2, padding=padw),
+                nn.BatchNorm2d(nf), nn.LeakyReLU(0.2, True)
+            ]]
+
+        nf_prev = nf
+        nf = min(nf * 2, 512)
+        sequence += [[
+            nn.Conv2d(nf_prev, nf, kernel_size=kw, stride=1, padding=padw),
+            nn.BatchNorm2d(nf),
+            nn.LeakyReLU(0.2, True)
+        ]]
+
+        sequence += [[nn.Conv2d(nf, 1, kernel_size=kw, stride=1, padding=padw)]]
+
+        sequence += [[nn.Sigmoid()]]
+
+        sequence_stream = []
+        for n in range(len(sequence)):
+            sequence_stream += sequence[n]
+        self.model = nn.Sequential(*sequence_stream)
+
+    def forward(self, x):
+        return self.model(x)
