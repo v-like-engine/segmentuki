@@ -10,6 +10,7 @@ Current github repository aims to utilize generative potential of known concepts
 * [pix2pix HD {2}](https://arxiv.org/pdf/1711.11585.pdf)
 
 > **A note on copyrights**
+> 
 > Here and below in the current markdown file, the provided images are images taken from the listed sources {1} and {2}. Credentials for the images can be found at the links above.
 > We are not authors or distributors of these images to any extent, thus for copyrights please address the authors of the papers above.
 > 
@@ -65,7 +66,7 @@ This is the level of understanding beyond the classical segment2image synthesis 
 
 ## Progress
 
-The project is started at **Autumn 2003** and is currently in progress.
+The project is started at **Autumn 2023** and is currently in progress.
 Implementation of pix2pix model and preprocessing are done yet are still a subject to change or edit.
 
 
