@@ -15,7 +15,7 @@ class Pix2PixHD(nn.Module):
         self.generator = Generator(3, 3, 64, 1, 6, 1, 3, device).to(device)
         self.discriminator = MultiscaleDiscriminator(3, 64, 2, 2, device).to(device)
 
-        self.criterion_gan = GANLoss()
+        self.criterion_gan = GANLoss().to(device)
 
         # generator optimizer
         self.optimizer_G = torch.optim.Adam(self.generator.parameters(), lr=lr, betas=(beta1, beta2))
