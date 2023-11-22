@@ -1,5 +1,5 @@
-# from models.pix2pixHD.networks import Generator, MultiscaleDiscriminator, GANLoss
-from networks import Generator, MultiscaleDiscriminator, GANLoss
+from models.pix2pixHD.networks import Generator, MultiscaleDiscriminator, GANLoss
+# from networks import Generator, MultiscaleDiscriminator, GANLoss
 import torch.nn as nn
 import torch
 
