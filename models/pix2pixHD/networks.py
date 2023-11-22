@@ -226,15 +226,15 @@ class GANLoss(nn.Module):
             create_label = ((self.real_label_var is None) or
                             (self.real_label_var.numel() != x.numel()))
             if create_label:
-                real_tensor = torch.Tensor(x.size()).fill_(self.real_label)
-                self.real_label_var = torch.autograd.Variable(real_tensor, requires_grad=False)
+                real_tensor = torch.Tensor(x.size()).fill_(self.real_label).to('cuda')
+                self.real_label_var = torch.autograd.Variable(real_tensor, requires_grad=False).to('cuda')
             target_tensor = self.real_label_var
         else:
             create_label = ((self.fake_label_var is None) or
                             (self.fake_label_var.numel() != x.numel()))
             if create_label:
-                fake_tensor = torch.Tensor(x.size()).fill_(self.fake_label)
-                self.fake_label_var = torch.autograd.Variable(fake_tensor, requires_grad=False)
+                fake_tensor = torch.Tensor(x.size()).fill_(self.fake_label).to('cuda')
+                self.fake_label_var = torch.autograd.Variable(fake_tensor, requires_grad=False).to('cuda')
             target_tensor = self.fake_label_var
         return target_tensor
 
