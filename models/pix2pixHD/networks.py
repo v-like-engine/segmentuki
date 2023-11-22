@@ -8,6 +8,7 @@ class Generator(nn.Module):
                  num_local_enhancer_layers, num_res_blocks_local, device='cpu'):
         super(Generator, self).__init__()
         self.num_local_enhancer_layers = num_local_enhancer_layers
+        self.device = device
 
         # global generator
         ngf_global = ngf * (2 ** self.num_local_enhancer_layers)
@@ -45,8 +46,8 @@ class Generator(nn.Module):
                 model_upsample += [padding_layer, nn.Conv2d(ngf, output_channels, kernel_size=7, padding=0),
                                    nn.Tanh()]
 
-            self.models_downsample.append(nn.Sequential(*model_downsample))
-            self.models_upsample.append(nn.Sequential(*model_upsample))
+            self.models_downsample.append(nn.Sequential(*model_downsample).to(self.device))
+            self.models_upsample.append(nn.Sequential(*model_upsample).to(self.device))
 
         self.downsample = nn.AvgPool2d(3, stride=2, padding=(1, 1), count_include_pad=False)
 
@@ -54,11 +55,10 @@ class Generator(nn.Module):
         x_downsampled = [x]
         for i in range(self.num_local_enhancer_layers):
             x_downsampled.append(self.downsample(x_downsampled[-1]))
-
-        output_prev = self.model(x_downsampled[-1])
+        output_prev = self.model(x_downsampled[-1].to(self.device))
 
         for num_local_enhancer_layers in range(1, self.num_local_enhancer_layers + 1):
-            input_i = x_downsampled[self.num_local_enhancer_layers - num_local_enhancer_layers]
+            input_i = x_downsampled[self.num_local_enhancer_layers - num_local_enhancer_layers].to(self.device)
             output_prev = self.models_upsample[num_local_enhancer_layers](
                 self.models_downsample[num_local_enhancer_layers](input_i) + output_prev)
         return output_prev
