@@ -38,4 +38,8 @@ class Pix2PixHD(nn.Module):
         pred_fake = self.discriminator.forward(fake_image)
         loss_G = self.criterion_gan(pred_fake, True)
 
-        return [[loss_G, loss_D_real, loss_D_fake], None]
+        return [loss_G, loss_D_real, loss_D_fake]
+
+    def inference(self, label):
+        with torch.no_grad():
+            return self.generator.forward(label)
