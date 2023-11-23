@@ -15,7 +15,7 @@ class SPADEResnetBlock(nn.Module):
     it takes in the segmentation map as input, learns the skip connection if necessary,
     and applies normalization first and then convolution.
     """
-    def __init__(self, fin, fout, label_nc=150):
+    def __init__(self, fin, fout, label_nc=3):
         super().__init__()
         # Attributes
         self.learned_shortcut = (fin != fout)
@@ -57,7 +57,7 @@ class SPADEResnetBlock(nn.Module):
 
 
 class SPADEGenerator(nn.Module):
-    def __init__(self, input_channels, output_channels, ngf, semantic_nc=150, use_vae=False, z_dim=None, device='cpu'):
+    def __init__(self, semantic_nc, output_channels, ngf, use_vae=False, z_dim=None, device='cpu'):
         super(SPADEGenerator, self).__init__()
         self.sw = 128 // (2**5)
         self.sh = self.sw
@@ -114,7 +114,7 @@ class Pix2PixHDwithSPADE(nn.Module):
         :param beta1 and beta2: coefficients used for computing running averages of gradient and its square
         """
         super(Pix2PixHDwithSPADE, self).__init__()
-        self.generator = SPADEGenerator(3, 3, 64, semantic_nc, device=device).to(device)
+        self.generator = SPADEGenerator(semantic_nc, 3, 64, device=device).to(device)
         self.discriminator = MultiscaleDiscriminator(3, 64, 2, 2, device).to(device)
 
         self.criterion_gan = GANLoss().to(device)
