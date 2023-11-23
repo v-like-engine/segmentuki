@@ -108,13 +108,13 @@ class SPADEGenerator(nn.Module):
 
 
 class Pix2PixHDwithSPADE(nn.Module):
-    def __init__(self, lr_g=0.001, lr_d=0.004, beta1=0.9, beta2=0.999, device='cuda'):
+    def __init__(self, lr_g=0.001, lr_d=0.004, beta1=0.9, beta2=0.999, semantic_nc=3, device='cuda'):
         """
         :param lr: learning rate for both generator and discriminator
         :param beta1 and beta2: coefficients used for computing running averages of gradient and its square
         """
         super(Pix2PixHDwithSPADE, self).__init__()
-        self.generator = SPADEGenerator(3, 3, 64, device=device).to(device)
+        self.generator = SPADEGenerator(3, 3, 64, semantic_nc, device=device).to(device)
         self.discriminator = MultiscaleDiscriminator(3, 64, 2, 2, device).to(device)
 
         self.criterion_gan = GANLoss().to(device)
