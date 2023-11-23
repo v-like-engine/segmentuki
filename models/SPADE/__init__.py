@@ -1,1 +1,1 @@
-from architecture import Pix2PixHDwithSPADE
+from models.SPADE.architecture import Pix2PixHDwithSPADE
