@@ -57,9 +57,9 @@ class SPADEResnetBlock(nn.Module):
 
 
 class SPADEGenerator(nn.Module):
-    def __init__(self, semantic_nc, output_channels, ngf, use_vae=False, z_dim=None, device='cpu'):
+    def __init__(self, semantic_nc, multiplier_interpolation, ngf, use_vae=False, z_dim=None, device='cpu'):
         super(SPADEGenerator, self).__init__()
-        self.sw = 128 // (2**5)
+        self.sw = 128 // (2**multiplier_interpolation)
         self.sh = self.sw
         if use_vae:
             # If VAE, we utilize sampling from random Z vector with dimension z_dim
@@ -108,13 +108,13 @@ class SPADEGenerator(nn.Module):
 
 
 class Pix2PixHDwithSPADE(nn.Module):
-    def __init__(self, lr_g=0.001, lr_d=0.004, beta1=0.9, beta2=0.999, semantic_nc=3, device='cuda'):
+    def __init__(self, lr_g=0.001, lr_d=0.001, beta1=0.9, beta2=0.999, semantic_nc=3, device='cuda'):
         """
         :param lr: learning rate for both generator and discriminator
         :param beta1 and beta2: coefficients used for computing running averages of gradient and its square
         """
         super(Pix2PixHDwithSPADE, self).__init__()
-        self.generator = SPADEGenerator(semantic_nc, 3, 64, device=device).to(device)
+        self.generator = SPADEGenerator(semantic_nc, 1, 64, device=device).to(device)
         self.discriminator = MultiscaleDiscriminator(3, 64, 2, 2, device).to(device)
 
         self.criterion_gan = GANLoss().to(device)
