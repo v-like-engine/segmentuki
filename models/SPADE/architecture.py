@@ -114,7 +114,7 @@ class Pix2PixHDwithSPADE(nn.Module):
         :param beta1 and beta2: coefficients used for computing running averages of gradient and its square
         """
         super(Pix2PixHDwithSPADE, self).__init__()
-        self.generator = SPADEGenerator(semantic_nc, 1, 64, device=device).to(device)
+        self.generator = SPADEGenerator(semantic_nc, interpolated_size, 64, device=device).to(device)
         self.discriminator = MultiscaleDiscriminator(3, 64, 2, 2, device).to(device)
 
         self.criterion_gan = GANLoss().to(device)
