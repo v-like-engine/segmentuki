@@ -5,7 +5,19 @@ import torch.nn.functional as F
 
 
 class SPADE(nn.Module):
+    """
+    SPADE layer code with the same notation as in the original code made by NVIDIA
+    """
     def __init__(self, param_free_norm_type, ks, norm_nc, label_nc, nhidden=128):
+        """
+
+        :param param_free_norm_type:
+        :param ks:
+        :param norm_nc:
+        :param label_nc: number of labels in the label images, they will be split into separate images and concatenated
+            in the channels dimension
+        :param nhidden:
+        """
 
         super().__init__()
 
