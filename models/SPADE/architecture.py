@@ -57,9 +57,9 @@ class SPADEResnetBlock(nn.Module):
 
 
 class SPADEGenerator(nn.Module):
-    def __init__(self, semantic_nc, multiplier_interpolation, ngf, use_vae=False, z_dim=None, device='cpu'):
+    def __init__(self, semantic_nc, interpolated_size, ngf, use_vae=False, z_dim=None, device='cpu'):
         super(SPADEGenerator, self).__init__()
-        self.sw = 128 // (2**multiplier_interpolation)
+        self.sw = interpolated_size
         self.sh = self.sw
         if use_vae:
             # If VAE, we utilize sampling from random Z vector with dimension z_dim
