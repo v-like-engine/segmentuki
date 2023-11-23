@@ -108,7 +108,7 @@ class SPADEGenerator(nn.Module):
 
 
 class Pix2PixHDwithSPADE(nn.Module):
-    def __init__(self, lr_g=0.001, lr_d=0.001, beta1=0.9, beta2=0.999, semantic_nc=3, device='cuda'):
+    def __init__(self, lr_g=0.001, lr_d=0.001, beta1=0.9, beta2=0.999, semantic_nc=3, interpolated_size=128, device='cuda'):
         """
         :param lr: learning rate for both generator and discriminator
         :param beta1 and beta2: coefficients used for computing running averages of gradient and its square
