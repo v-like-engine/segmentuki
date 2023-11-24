@@ -20,8 +20,6 @@ Current github repository aims to utilize generative potential of known concepts
 
 Links listed lead to research papers with concept descriptions and are elaborated more below in this documentation.
 
->**Note:** Architectures of the systems above are a subject to change and set up to achieve better understanding of segmentation maps inside the models.
-
 ## Key concepts of the project
 The main so-to-say USP of SegmentUKI is to provide real knowledgeable imaging via segmentation map understanding. Understanding of segmentation maps includes the following parts:
 
@@ -61,20 +59,30 @@ SegmentUKI will utilize benefits of SPADE in some of project's modules.
 
 
 Some segments may overlap on the segmentation map and should be treated as layering. Solid layers are claimed to be visible throughout more transparent once.
-This is the level of understanding beyond the classical segment2image synthesis task. Condition passed to pix2pix is a subject to be set up by preprocessing, and that approach is how we address the problem
+This is the level of understanding beyond the classical segment2image synthesis task. Condition passed to pix2pix is a subject to be set up by preprocessing.
 
 
 ## Progress
 
 The project is started at **Autumn 2023** and is currently in progress.
-Implementation of pix2pix model and preprocessing are done yet are still a subject to change or edit.
+Implementation of pix2pixHD model and SPADE version are done yet are still a subject to change or edit.
 
 
 ## Structure
 
-Project is structured and architecture is maintained with good code practices. Later on this section will be embraced to navigate users and possible new collaborators explaining positions and modules of the code
+Project is structured and architecture is maintained with good code practices.
+Models module contains two submodules: pix2pixHD and SPADE, each includes weights directory with weights of different versions of trained models; code files of models implementation and auxiliary functions for deployment (app).
+
+pix2pixHD parts (generators and discriminator networks) implementation are present in models.pix2pixHD.networks.py. 
+SPADE implementation can be found at models.SPADE.normalization_layers.py, while network which uses SPADE is present in models.SPADE.architecture.py.
+
+Api app code is stored in api module, containing templates in html format and Flask-based app in api.app.py.
 
 
 ## How to start
 
-Current section will contain a guidance on how-to-use the system once we will have the actual one-fits-all running routine or executable files. Stay tuned!
+To launch the app, please run main.py using python 3 and open localhost: http://127.0.0.1:8080. 
+You will need CUDA to run the application (models require CUDA).
+
+Command to launch:
+> python main.py

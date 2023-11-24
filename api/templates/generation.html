@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Segment Understanding Knowledgeable Imaging</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-tooltip"></script>
+</head>
+<body style="text-align: center; padding-bottom: 200px; background-color:#10131a;">
+    <div class="container">
+        {% if generation_done %}
+        <img src="{{ result }}" style='width:100%; max-width:1280px;' alt="SegmentUKI">
+        <button onclick="window.location.href='/'" class="btn btn-secondary" style="width: 250px; display: flex;
+        justify-content: center; margin: 0 auto; margin-top: 50px">Back</button>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+        {% endif %}
+        {% if not generation_done %}
+        <div class="row mt-4">
+            <div class="col">
+                <a href="/">
+                    <img src="{{ url_for('static', filename='images/seg-logo.png') }}" alt="SegmentUKI" width="600">
+                </a>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col">
+                <form method="post" enctype="multipart/form-data">
+                    <div style="justify-content: center; margin: 0 auto;">
+                        <h6 style="color: #fff">Provide segmentation map .PNG or .JPG image</h6>
+                        <input type="file" id="file" name="file" accept=".png, .jpg" style="justify-content: center; margin-left: 50px; color: #fff">
+                    </div>
+                    <div class="mb-3">
+                        <label for="Model type" class="form-label" style="color: #fff">Model type:</label>
+                        <select class="form-select" id="Model type" name="Model type" style="width: 250px; display: flex;
+                        justify-content: center; margin: 0 auto;" required>
+                            <option value="hd">Pix2PixHD</option>
+                            <option value="spade">Pix2PixHD with SPADE</option>
+                        </select>
+                        <label for="Trained on dataset" class="form-label" style="color: #fff">Model trained on:</label>
+                        <select class="form-select" id="Trained on dataset" name="Trained on dataset" style="width: 250px; display: flex;
+                        justify-content: center; margin: 0 auto;" required>
+                            <option value="ade">ADE20K</option>
+                            <option value="facades">Facades</option>
+                        </select>
+                        <label for="Trained epochs" class="form-label" style="color: #fff">Model version:</label>
+                        <select class="form-select" id="Trained epochs" name="Trained epochs" style="width: 250px; display: flex;
+                        justify-content: center; margin: 0 auto;" required>
+                            <option value="min">Best</option>
+                            <option value="med">Medium</option>
+                            <option value="max">Eco</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-secondary" style="width: 250px">Analyze</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
